@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Isaac-like Roguelike</title>
+    <style>
+        body {
+            background-color: #222;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: sans-serif;
+            color: #fff;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        canvas {
+            border: 2px solid #555;
+            background-color: #333;
+        }
+        #ui {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            font-size: 1.2em;
+        }
+        #health-container {
+            display: flex;
+        }
+        .heart {
+            width: 30px;
+            height: 30px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="red"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5a5.5 5.5 0 0 1 5.5-5.5c1.74 0 3.41.81 4.5 2.09A5.5 5.5 0 0 1 16.5 3c3.03 0 5.5 2.47 5.5 5.5 0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>') no-repeat center center;
+            background-size: contain;
+        }
+        .half-heart {
+            width: 30px;
+            height: 30px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="red"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5a5.5 5.5 0 0 1 5.5-5.5c1.74 0 3.41.81 4.5 2.09V21.35z"/></svg>') no-repeat center center;
+            background-size: contain;
+        }
+        .empty-heart {
+            width: 30px;
+            height: 30px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="gray"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5a5.5 5.5 0 0 1 5.5-5.5c1.74 0 3.41.81 4.5 2.09A5.5 5.5 0 0 1 16.5 3c3.03 0 5.5 2.47 5.5 5.5 0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>') no-repeat center center;
+            background-size: contain;
+        }
+        #resources {
+            display: flex;
+            gap: 15px;
+            font-size: 1.2em;
+        }
+        #game-over-screen {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            padding: 40px;
+            border: 2px solid #ff0000;
+            text-align: center;
+            display: none;
+            z-index: 100;
+        }
+        #win-screen {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            padding: 40px;
+            border: 2px solid #00ff00;
+            text-align: center;
+            display: none;
+            z-index: 100;
+        }
+        #minimap-container {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 10px;
+            border: 1px solid #555;
+        }
+        #minimap {
+            display: grid;
+            grid-template-columns: repeat(3, 10px);
+            grid-template-rows: repeat(1, 10px);
+            gap: 2px;
+        }
+        .map-cell {
+            width: 10px;
+            height: 10px;
+            background-color: transparent;
+            border: 1px solid #333;
+        }
+        .map-cell.visited {
+            background-color: #888;
+        }
+        .map-cell.current {
+            background-color: limegreen;
+        }
+        .map-cell.boss {
+            background-color: darkred;
+        }
+        .map-cell.shop {
+            background-color: purple;
+        }
+        
+        .shop-item-card {
+            background-color: #444;
+            padding: 10px;
+            border: 1px solid #777;
+            text-align: center;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas"></canvas>
+
+    <div id="ui">
+        <div id="health-container"></div>
+        <div id="resources">
+            <span id="keys">🗝️ 0</span>
+            <span id="bombs">💣 0</span>
+            <span id="coins">💰 0</span>
+        </div>
+    </div>
+    
+    <div id="minimap-container">
+        <div id="minimap"></div>
+    </div>
+    
+    <div id="game-over-screen">
+        <h1>GAME OVER</h1>
+        <p>Aperte F5 para recomeçar.</p>
+    </div>
+    
+    <div id="win-screen">
+        <h1>VOCÊ VENCEU!</h1>
+        <p>Aperte F5 para recomeçar.</p>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const uiHealthContainer = document.getElementById('health-container');
+        const uiKeys = document.getElementById('keys');
+        const uiBombs = document.getElementById('bombs');
+        const uiCoins = document.getElementById('coins');
+        const gameOverScreen = document.getElementById('game-over-screen');
+        const winScreen = document.getElementById('win-screen');
+        const minimapContainer = document.getElementById('minimap');
+
+        canvas.width = 1280;
+        canvas.height = 720;
+
+        // -- Constantes do Jogo --
+        const TILE_SIZE = 80;
+        const PLAYER_SPEED = 4;
+        const PLAYER_PROJECTILE_SPEED = 8;
+        const ENEMY_PROJECTILE_SPEED = 4;
+
+        let lastPlayerShotTime = 0;
+        const playerShotDelay = 200;
+        
+        let enemyProjectiles = [];
+        let enemies = [];
+        let projectiles = [];
+        let items = [];
+        let isWin = false;
+
+        // -- Classes do Jogo --
+        class Player {
+            constructor() {
+                this.x = canvas.width / 2 - TILE_SIZE / 2;
+                this.y = canvas.height / 2 - TILE_SIZE / 2;
+                this.width = TILE_SIZE * 0.8;
+                this.height = TILE_SIZE * 0.8;
+                this.speed = PLAYER_SPEED;
+                this.health = 6;
+                this.maxHealth = 6;
+                this.keys = 0;
+                this.bombs = 0;
+                this.coins = 5; // Começa com 5 moedas para poder comprar algo
+                this.iframes = 0;
+                this.direction = { x: 0, y: 1 };
+            }
+
+            draw() {
+                // Desenha o corpo (parte inferior)
+                ctx.fillStyle = this.iframes > 0 ? 'rgba(0, 0, 255, 0.5)' : 'blue';
+                ctx.fillRect(this.x, this.y + this.height * 0.5, this.width, this.height * 0.5);
+
+                // Desenha a cabeça (parte superior)
+                const headSize = this.width * 0.8;
+                const headX = this.x + (this.width - headSize) / 2;
+                const headY = this.y;
+                
+                ctx.fillStyle = 'lightblue';
+                ctx.beginPath();
+                ctx.arc(headX + headSize/2, headY + headSize/2, headSize/2, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Desenha o "nariz" ou "rosto" na direção que o jogador está olhando/atirando
+                const noseSize = headSize * 0.3;
+                let noseX = headX + headSize/2 + this.direction.x * (headSize/2 - noseSize/2);
+                let noseY = headY + headSize/2 + this.direction.y * (headSize/2 - noseSize/2);
+                
+                ctx.fillStyle = 'darkblue';
+                ctx.fillRect(noseX - noseSize/2, noseY - noseSize/2, noseSize, noseSize);
+            }
+
+            takeDamage(amount) {
+                if (this.iframes <= 0) {
+                    this.health -= amount;
+                    this.iframes = 60; // 1 segundo de invulnerabilidade
+                    if (this.health <= 0) {
+                        isGameOver = true;
+                    }
+                }
+            }
+        }
+
+        class Enemy {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.width = TILE_SIZE * 0.7;
+                this.height = TILE_SIZE * 0.7;
+                this.health = 2;
+                this.speed = 1.5;
+            }
+            draw() {
+                ctx.fillStyle = 'red';
+                ctx.fillRect(this.x, this.y, this.width, this.height);
+            }
+            update(player) {
+                const dx = player.x - this.x;
+                const dy = player.y - this.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist > 5) {
+                    this.x += (dx / dist) * this.speed;
+                    this.y += (dy / dist) * this.speed;
+                }
+            }
+        }
+        
+        class EnemyShooter extends Enemy {
+            constructor(x, y) {
+                super(x, y);
+                this.speed = 1;
+                this.lastShotTime = 0;
+                this.shotDelay = 2000;
+            }
+            draw() {
+                ctx.fillStyle = 'darkred';
+                ctx.fillRect(this.x, this.y, this.width, this.height);
+            }
+            update(player) {
+                super.update(player);
+                const now = Date.now();
+                if (now - this.lastShotTime > this.shotDelay) {
+                    this.shoot(player);
+                    this.lastShotTime = now;
+                }
+            }
+            shoot(player) {
+                const dx = player.x - this.x;
+                const dy = player.y - this.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist > 0) {
+                    const dirX = dx / dist;
+                    const dirY = dy / dist;
+                    enemyProjectiles.push(new Projectile(this.x + this.width/2, this.y + this.height/2, dirX, dirY, ENEMY_PROJECTILE_SPEED, 'purple'));
+                }
+            }
+        }
+
+        class BossGapingMaw extends Enemy {
+            constructor(x, y) {
+                super(x, y);
+                this.width = TILE_SIZE * 1.5;
+                this.height = TILE_SIZE * 1.5;
+                this.health = 20;
+                this.speed = 0.5;
+                this.lastShotTime = 0;
+                this.shotDelay = 1500;
+            }
+            draw() {
+                ctx.fillStyle = 'yellow';
+                ctx.fillRect(this.x, this.y, this.width, this.height);
+            }
+            update(player) {
+                super.update(player);
+                const now = Date.now();
+                if (now - this.lastShotTime > this.shotDelay) {
+                    this.shoot(player);
+                    this.lastShotTime = now;
+                }
+            }
+            shoot(player) {
+                const dx = player.x - this.x;
+                const dy = player.y - this.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist > 0) {
+                    const dirX = dx / dist;
+                    const dirY = dy / dist;
+                    enemyProjectiles.push(new Projectile(this.x + this.width/2, this.y + this.height/2, dirX, dirY, ENEMY_PROJECTILE_SPEED * 1.5, 'orange'));
+                }
+            }
+        }
+        
+        class Projectile {
+            constructor(x, y, dirX, dirY, speed, color) {
+                this.x = x;
+                this.y = y;
+                this.width = 10;
+                this.height = 10;
+                this.dirX = dirX;
+                this.dirY = dirY;
+                this.speed = speed;
+                this.color = color;
+                this.isDead = false;
+            }
+            draw() {
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.width / 2, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            update() {
+                this.x += this.dirX * this.speed;
+                this.y += this.dirY * this.speed;
+                if (this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) {
+                    this.isDead = true;
+                }
+            }
+        }
+
+        class Item {
+            constructor(x, y, type) {
+                this.x = x;
+                this.y = y;
+                this.width = TILE_SIZE * 0.5;
+                this.height = TILE_SIZE * 0.5;
+                this.type = type;
+            }
+            draw() {
+                switch (this.type) {
+                    case 'coin':
+                        ctx.fillStyle = 'yellow';
+                        break;
+                    case 'key':
+                        ctx.fillStyle = 'gray';
+                        break;
+                    case 'bomb':
+                        ctx.fillStyle = 'black';
+                        break;
+                    case 'health':
+                        ctx.fillStyle = 'pink';
+                        break;
+                }
+                ctx.fillRect(this.x, this.y, this.width, this.height);
+            }
+        }
+        
+        class ShopItem {
+            constructor(x, y, type, cost) {
+                this.x = x;
+                this.y = y;
+                this.width = 120;
+                this.height = 80;
+                this.type = type;
+                this.cost = cost;
+                this.color = '#777';
+                this.text = '';
+
+                switch(type) {
+                    case 'health':
+                        this.text = '❤️ Coração';
+                        break;
+                    case 'key':
+                        this.text = '🗝️ Chave';
+                        break;
+                    case 'bomb':
+                        this.text = '💣 Bomba';
+                        break;
+                }
+            }
+
+            draw() {
+                ctx.fillStyle = this.color;
+                ctx.fillRect(this.x, this.y, this.width, this.height);
+                ctx.fillStyle = 'white';
+                ctx.font = '20px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText(this.text, this.x + this.width / 2, this.y + this.height * 0.4);
+                ctx.font = '16px Arial';
+                ctx.fillText(`Custo: ${this.cost} 💰`, this.x + this.width / 2, this.y + this.height * 0.7);
+            }
+        }
+
+        // -- Variáveis do Jogo --
+        let player = new Player();
+        let currentRoom = { x: 0, y: 0 };
+        let dungeon = {};
+        let keysPressed = {};
+        let isGameOver = false;
+
+        // -- Funções de Jogo --
+        function checkCollision(obj1, obj2) {
+            return obj1.x < obj2.x + obj2.width &&
+                   obj1.x + obj1.width > obj2.x &&
+                   obj1.y < obj2.y + obj2.height &&
+                   obj1.y + obj1.height > obj2.y;
+        }
+        
+        function playerShoot(dirX, dirY) {
+            projectiles.push(new Projectile(player.x + player.width / 2, player.y + player.height / 2, dirX, dirY, PLAYER_PROJECTILE_SPEED, 'white'));
+        }
+
+        function createRoom(x, y, type = 'normal') {
+            const room = {
+                enemies: [],
+                items: [],
+                doors: {
+                    up: false,
+                    down: false,
+                    left: false,
+                    right: false
+                },
+                visited: false,
+                type: type
+            };
+
+            if (type === 'normal') {
+                const numEnemies = Math.floor(Math.random() * 2) + 1;
+                for (let i = 0; i < numEnemies; i++) {
+                    const enemyX = Math.random() * (canvas.width - 2 * TILE_SIZE) + TILE_SIZE;
+                    const enemyY = Math.random() * (canvas.height - 2 * TILE_SIZE) + TILE_SIZE;
+                    if (Math.random() < 0.5) {
+                        room.enemies.push(new EnemyShooter(enemyX, enemyY));
+                    } else {
+                        room.enemies.push(new Enemy(enemyX, enemyY));
+                    }
+                }
+                room.items.push(new Item(canvas.width / 2, canvas.height / 2, 'coin'));
+            } else if (type === 'boss') {
+                const bossX = canvas.width / 2 - TILE_SIZE * 0.75;
+                const bossY = canvas.height / 2 - TILE_SIZE * 0.75;
+                room.enemies.push(new BossGapingMaw(bossX, bossY));
+            } else if (type === 'shop') {
+                room.items.push(new ShopItem(canvas.width / 2 - 200, canvas.height / 2, 'health', 5));
+                room.items.push(new ShopItem(canvas.width / 2 - 50, canvas.height / 2, 'key', 10));
+                room.items.push(new ShopItem(canvas.width / 2 + 100, canvas.height / 2, 'bomb', 15));
+            }
+            
+            return room;
+        }
+
+        function generateDungeon() {
+            const dungeon = {};
+            dungeon[0] = { 0: createRoom(0, 0, 'normal') };
+            dungeon[1] = { 0: createRoom(1, 0, 'shop') };
+            dungeon[-1] = { 0: createRoom(-1, 0, 'boss') };
+
+            dungeon[0][0].doors.right = true;
+            dungeon[0][0].doors.left = true;
+
+            dungeon[1][0].doors.left = true;
+            dungeon[-1][0].doors.right = true;
+            
+            return dungeon;
+        }
+
+        function switchRoom(direction) {
+            const currentRoomState = dungeon[currentRoom.x][currentRoom.y];
+            currentRoomState.enemies = [...enemies];
+            currentRoomState.items = [...items];
+            
+            enemyProjectiles = []; 
+            projectiles = [];
+            
+            if (direction === 'up') {
+                currentRoom.y--;
+                player.y = canvas.height - TILE_SIZE * 2;
+            } else if (direction === 'down') {
+                currentRoom.y++;
+                player.y = TILE_SIZE * 2;
+            } else if (direction === 'left') {
+                currentRoom.x--;
+                player.x = canvas.width - TILE_SIZE * 2;
+            } else if (direction === 'right') {
+                currentRoom.x++;
+                player.x = TILE_SIZE * 2;
+            }
+            
+            const newRoomState = dungeon[currentRoom.x][currentRoom.y];
+            enemies = newRoomState.enemies;
+            items = newRoomState.items;
+            newRoomState.visited = true;
+        }
+
+        function drawRoom() {
+            ctx.fillStyle = '#666';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            const currentRoomType = dungeon[currentRoom.x][currentRoom.y].type;
+            let roomColor = '#666';
+            if (currentRoomType === 'boss') roomColor = '#444';
+            if (currentRoomType === 'shop') roomColor = '#555';
+            
+            ctx.fillStyle = roomColor;
+            ctx.fillRect(TILE_SIZE, TILE_SIZE, canvas.width - 2 * TILE_SIZE, canvas.height - 2 * TILE_SIZE);
+
+
+            const roomHasEnemies = enemies.length > 0;
+            const currentRoomDoors = dungeon[currentRoom.x][currentRoom.y].doors;
+
+            ctx.fillStyle = '#8B4513';
+            ctx.fillRect(0, 0, canvas.width, TILE_SIZE);
+            ctx.fillRect(0, canvas.height - TILE_SIZE, canvas.width, TILE_SIZE);
+            ctx.fillRect(0, 0, TILE_SIZE, canvas.height);
+            ctx.fillRect(canvas.width - TILE_SIZE, 0, TILE_SIZE, canvas.height);
+            
+            const doorColor = roomHasEnemies && currentRoomType !== 'shop' ? '#555' : '#666';
+            
+            ctx.fillStyle = doorColor;
+            if (currentRoomDoors.up) {
+                ctx.fillRect(canvas.width / 2 - TILE_SIZE, 0, TILE_SIZE * 2, TILE_SIZE);
+            }
+            if (currentRoomDoors.down) {
+                ctx.fillRect(canvas.width / 2 - TILE_SIZE, canvas.height - TILE_SIZE, TILE_SIZE * 2, TILE_SIZE);
+            }
+            if (currentRoomDoors.left) {
+                ctx.fillRect(0, canvas.height / 2 - TILE_SIZE, TILE_SIZE, TILE_SIZE * 2);
+            }
+            if (currentRoomDoors.right) {
+                ctx.fillRect(canvas.width - TILE_SIZE, canvas.height / 2 - TILE_SIZE, TILE_SIZE, TILE_SIZE * 2);
+            }
+        }
+
+        function updateUI() {
+            uiHealthContainer.innerHTML = '';
+            for (let i = 0; i < player.maxHealth / 2; i++) {
+                if (player.health >= (i + 1) * 2) {
+                    const heart = document.createElement('div');
+                    heart.className = 'heart';
+                    uiHealthContainer.appendChild(heart);
+                } else if (player.health === (i * 2) + 1) {
+                    const halfHeart = document.createElement('div');
+                    halfHeart.className = 'half-heart';
+                    uiHealthContainer.appendChild(halfHeart);
+                } else {
+                    const emptyHeart = document.createElement('div');
+                    emptyHeart.className = 'empty-heart';
+                    uiHealthContainer.appendChild(emptyHeart);
+                }
+            }
+
+            uiKeys.textContent = `🗝️ ${player.keys}`;
+            uiBombs.textContent = `💣 ${player.bombs}`;
+            uiCoins.textContent = `💰 ${player.coins}`;
+        }
+        
+        function updateMinimap() {
+            minimapContainer.innerHTML = '';
+            
+            const rooms = Object.values(dungeon).flatMap(obj => Object.values(obj));
+            const sortedRooms = rooms.sort((a, b) => a.x - b.x);
+
+            sortedRooms.forEach(room => {
+                const cell = document.createElement('div');
+                cell.className = 'map-cell';
+                if (room.visited) {
+                    cell.classList.add('visited');
+                }
+                if (room.x === currentRoom.x && room.y === currentRoom.y) {
+                    cell.classList.add('current');
+                }
+                if (room.type === 'boss') {
+                    cell.classList.add('boss');
+                }
+                if (room.type === 'shop') {
+                    cell.classList.add('shop');
+                }
+                minimapContainer.appendChild(cell);
+            });
+        }
+        
+        function init() {
+            dungeon = generateDungeon();
+            dungeon[currentRoom.x][currentRoom.y].visited = true;
+            enemies = dungeon[currentRoom.x][currentRoom.y].enemies;
+            items = dungeon[currentRoom.x][currentRoom.y].items;
+        }
+
+        window.addEventListener('keydown', (e) => {
+            keysPressed[e.key.toLowerCase()] = true;
+        });
+        window.addEventListener('keyup', (e) => {
+            keysPressed[e.key.toLowerCase()] = false;
+        });
+        
+        canvas.addEventListener('click', (e) => {
+            const currentRoomType = dungeon[currentRoom.x][currentRoom.y].type;
+            if (currentRoomType === 'shop') {
+                const rect = canvas.getBoundingClientRect();
+                const mouseX = e.clientX - rect.left;
+                const mouseY = e.clientY - rect.top;
+
+                items.forEach(item => {
+                    if (item instanceof ShopItem && checkCollision({x: mouseX, y: mouseY, width: 1, height: 1}, item)) {
+                        if (player.coins >= item.cost) {
+                            player.coins -= item.cost;
+                            if (item.type === 'health') {
+                                player.health = Math.min(player.maxHealth, player.health + 2);
+                            } else if (item.type === 'key') {
+                                player.keys += 1;
+                            } else if (item.type === 'bomb') {
+                                player.bombs += 1;
+                            }
+                            // O item desaparece após a compra
+                            items = items.filter(i => i !== item);
+                        }
+                    }
+                });
+            }
+        });
+
+        // -- Loop Principal do Jogo --
+        function gameLoop() {
+            if (isGameOver) {
+                gameOverScreen.style.display = 'block';
+                return;
+            }
+            
+            if (isWin) {
+                winScreen.style.display = 'block';
+                return;
+            }
+            
+            // -- Lógica de Atualização (Update) --
+            
+            if (keysPressed['w']) player.y -= player.speed;
+            if (keysPressed['s']) player.y += player.speed;
+            if (keysPressed['a']) player.x -= player.speed;
+            if (keysPressed['d']) player.x += player.speed;
+
+            const now = Date.now();
+            if (now - lastPlayerShotTime > playerShotDelay) {
+                if (keysPressed['arrowup']) {
+                    playerShoot(0, -1);
+                    lastPlayerShotTime = now;
+                    player.direction = { x: 0, y: -1 };
+                } else if (keysPressed['arrowdown']) {
+                    playerShoot(0, 1);
+                    lastPlayerShotTime = now;
+                    player.direction = { x: 0, y: 1 };
+                } else if (keysPressed['arrowleft']) {
+                    playerShoot(-1, 0);
+                    lastPlayerShotTime = now;
+                    player.direction = { x: -1, y: 0 };
+                } else if (keysPressed['arrowright']) {
+                    playerShoot(1, 0);
+                    lastPlayerShotTime = now;
+                    player.direction = { x: 1, y: 0 };
+                }
+            }
+
+            if (player.iframes > 0) {
+                player.iframes--;
+            }
+
+            projectiles.forEach(p => p.update());
+            projectiles = projectiles.filter(p => !p.isDead);
+
+            enemies.forEach(e => {
+                if (e.update) e.update(player);
+            });
+            enemyProjectiles.forEach(p => p.update());
+            enemyProjectiles = enemyProjectiles.filter(p => !p.isDead);
+
+            // Colisão de Projéteis do Jogador com Inimigos
+            projectiles.forEach(p => {
+                enemies.forEach(e => {
+                    if (checkCollision(p, e)) {
+                        p.isDead = true;
+                        e.health -= 1;
+                        if (e.health <= 0) {
+                            if (e instanceof BossGapingMaw) {
+                                isWin = true;
+                            }
+                            if (Math.random() < 0.5) {
+                                const itemTypes = ['coin', 'key', 'bomb', 'health'];
+                                const randomType = itemTypes[Math.floor(Math.random() * itemTypes.length)];
+                                items.push(new Item(e.x, e.y, randomType));
+                            }
+                        }
+                    }
+                });
+            });
+
+            // Colisão de Inimigos e Projéteis Inimigos com o Jogador
+            enemies.forEach(e => {
+                if (checkCollision(e, player)) {
+                    player.takeDamage(1);
+                }
+            });
+            enemyProjectiles.forEach(p => {
+                if (checkCollision(p, player)) {
+                    player.takeDamage(1);
+                    p.isDead = true;
+                }
+            });
+
+            // Colisão do Jogador com Itens
+            items = items.filter(item => {
+                if (item instanceof Item && checkCollision(player, item)) {
+                    switch (item.type) {
+                        case 'coin':
+                            player.coins += 1;
+                            break;
+                        case 'key':
+                            player.keys += 1;
+                            break;
+                        case 'bomb':
+                            player.bombs += 1;
+                            break;
+                        case 'health':
+                            player.health = Math.min(player.maxHealth, player.health + 2);
+                            break;
+                    }
+                    return false;
+                }
+                return true;
+            });
+            
+            // Transição de sala apenas se não houver inimigos (exceto salas de loja)
+            const currentRoomType = dungeon[currentRoom.x][currentRoom.y].type;
+            if (enemies.length === 0 || currentRoomType === 'shop') {
+                const currentRoomDoors = dungeon[currentRoom.x][currentRoom.y].doors;
+                if (player.y < TILE_SIZE && currentRoomDoors.up) switchRoom('up');
+                if (player.y > canvas.height - TILE_SIZE * 2 && currentRoomDoors.down) switchRoom('down');
+                if (player.x < TILE_SIZE && currentRoomDoors.left) switchRoom('left');
+                if (player.x > canvas.width - TILE_SIZE * 2 && currentRoomDoors.right) switchRoom('right');
+            }
+            
+            enemies = enemies.filter(e => e.health > 0);
+
+            // -- Lógica de Desenho (Draw) --
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawRoom();
+            enemies.forEach(e => e.draw());
+            items.forEach(i => i.draw());
+            projectiles.forEach(p => p.draw());
+            enemyProjectiles.forEach(p => p.draw());
+            player.draw();
+            
+            updateUI();
+            updateMinimap();
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        init();
+        gameLoop();
+    </script>
+</body>
+</html>
