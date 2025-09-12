@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Classes PHP</title>
+    <style>
+        form {
+            margin: auto;
+            border: solid 1px black;
+            background-color: rgb(255, 150, 192);
+            padding: 20px;
+            border-radius: 5px;
+            width: 50%;
+        }
+        h1 {
+            text-align: center;
+            color: black;
+  
+        }
+        label {
+            font-weight: bold;
+        }
+        input, select {
+            margin: 10px 0;
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid black;
+            width: calc(100% - 16px);
+            font-size: 16px;
+       
+        }
+        button {
+            background-color: white;
+            color: black;
+            padding: 10px 20px;
+            border: 1px solid black;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: rgb(230, 230, 230);
+        }
+    </style>
+</head>
+<body>
+    <h1>Cadastro</h1>
+    <form action="salvar.php" method="post">
+        <label for="tipo">Tipo de usuário:</label>
+        <select name="tipo" id="tipo" required>
+            <option value="">Selecione</option>
+            <option value="professor">Professor</option>
+            <option value="aluno">Aluno</option>
+        </select>
+        
+        <label for="nome">Nome:</label>
+        <input type="text" id="nome" name="nome" placeholder="Digite seu nome" required>
+        
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" placeholder="Digite seu email" required>
+        
+        <div id="campo_disciplina">
+            <label for="disciplina">Disciplina (para professor):</label>
+            <input type="text" id="disciplina" name="disciplina" placeholder="Digite a disciplina" required>
+        </div>
+        
+        <div id="campo_matricula">
+            <label for="matricula">Matrícula (para aluno):</label>
+            <input type="text" id="matricula" name="matricula" placeholder="Digite a matrícula" required>
+        </div>
+        <button type="submit">Salvar</button>
+    </form>
+</body>
+</html>

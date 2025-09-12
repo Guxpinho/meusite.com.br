@@ -1,0 +1,70 @@
+{
+    "aluno": [
+        {
+            "tipo": "aluno",
+            "nome": "gustavo ",
+            "email": "gustavoguidolimpinho@gmail.com",
+            "matricula": "dekloe"
+        }
+    ],
+    "professor": [
+        {
+            "tipo": "professor",
+            "nome": "gustavo ",
+            "email": "gustavoguidolimpinho@gmail.com",
+            "disciplina": ""
+        }
+    ],
+    "professores": [
+        {
+            "tipo": "professor",
+            "nome": "rfjrifj",
+            "email": "gustavoguidolimpinho@gmail.com",
+            "disciplina": "matemática"
+        },
+        {
+            "tipo": "professor",
+            "nome": "ecmoemc",
+            "email": "gustavoguidolimpinho@gmail.com",
+            "disciplina": "matemática"
+        },
+        {
+            "tipo": "professor",
+            "nome": "ecmoemc",
+            "email": "gustavoguidolimpinho@gmail.com",
+            "disciplina": "matemática"
+        },
+        {
+            "tipo": "professor",
+            "nome": "ecmoemc",
+            "email": "gustavoguidolimpinho@gmail.com",
+            "disciplina": "matemática"
+        },
+        {
+            "tipo": "professor",
+            "nome": "ecmoemc",
+            "email": "gustavoguidolimpinho@gmail.com",
+            "disciplina": "matemática"
+        }
+    ],
+    "alunos": [
+        {
+            "tipo": "aluno",
+            "nome": "gustavo ",
+            "email": "gustavoguidolimpinho@gmail.com",
+            "matricula": "dekloe"
+        },
+        {
+            "tipo": "aluno",
+            "nome": "gustavo ",
+            "email": "gustavoguidolimpinho@gmail.com",
+            "matricula": "dekloe"
+        },
+        {
+            "tipo": "aluno",
+            "nome": "gustavo ",
+            "email": "gustavoguidolimpinho@gmail.com",
+            "matricula": "dekloe"
+        }
+    ]
+}

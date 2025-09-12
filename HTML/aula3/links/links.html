@@ -6,6 +6,33 @@
     <title>Links</title>
 </head>
 <body>
+    <style>
+    body {
+        background-color: rgb(255, 255, 255);
+        font-family: Arial, sans-serif;
+        margin: 20px;
+     h1 {
+        color: brown;
+     }
+     a:link{
+        color: rgb(255, 167, 176); /* Cor do link não visitado */
+        text-decoration: none; /* Remove o sublinhado */
+    }
+    a:visited {
+        color: rgb(217, 10, 228); /* Cor do link visitado */
+    }
+    a:hover {
+        color: red; /* Cor do link ao passar o mouse */
+    }
+    a:active {
+        color: rgb(255, 247, 0); /* Cor do link ativo (clicado) */
+
+    }
+    .topo {
+        color: rgb(255, 8, 0);
+    }
+    }
+    </style>
     <h1>Links</h1>
     <ul>
         <li><a href="https://www.youtube.com" target="_blank">youtube</a></li>
@@ -13,7 +40,7 @@
         <li><a href="https://www.wikipedia.org" target="_blank">Wikipedia</a></li>
     </ul>
     <header style="text-align: center;">
-        <h1 id="topo">exemplo de Links na mesma Pagina</h1>
+        <h1 id="topo" class="topo" >exemplo de Links na mesma Pagina</h1>
         <a href="#secao1"> ir para secao 1</a><br>
         <a href="#secao2"> ir para secao 2</a><br>
         <a href="#secao3"> ir para secao 3</a>
@@ -39,7 +66,7 @@ A superposição permite que um qubit esteja simultaneamente nos estados 0 e 1, 
         <section style="text-align: center;">
             <h1>Exemplo de abertura de Arquivo no Navegador</h1>
             <p><a href="../links/pdfs/aula_frontend.pdf" target="_blank">Abrir aula_frontend.pdf</a></p>
-            
+
         </section>
 </body>
 </html>

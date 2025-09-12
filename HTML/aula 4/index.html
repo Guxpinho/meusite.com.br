@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        table {
+            margin: 0 auto;
+            border-collapse: collapse;
+            border-color: brown; /* Centraliza a tabela horizontalmente */
+        }
+        th, td {
+            padding: 10px; /* Espaçamento interno das células */
+            text-align: center;
+            border-collapse: collapse; /* Alinha o texto ao centro */
+        }
+        caption {
+            font-weight: bold; /* Negrito para o título da tabela */
+            margin-bottom: 10px; /* Espaçamento abaixo do título */
+        }
+        h1, h2 {
+            text-align: center; /* Centraliza os títulos */
+        }
+        dl {
+            width: 50%; /* Define a largura do glossário */
+            margin: 0 auto; /* Centraliza o glossário */
+        }
+        dt {
+            font-weight: bold; /* Negrito para os termos */
+            margin-top: 10px; /* Espaçamento acima dos termos */
+        }
+        dd {
+            margin-left: 20px; /* Recuo para as definições */
+            margin-bottom: 10px; /* Espaçamento abaixo das definições */
+        }
+
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Listas, Tabelas e Formulários</h1>
+    </header>
+    <main>
+        <section>
+            <h2>Glossários</h2>
+            <dl>
+                <dt>HTML</dt>
+                <dd>Linguagem de Marcação para estruturas paginas na web</dd>
+
+                <dt>CSS</dt>
+                <dd>folhas de estilo, usadas para definir a aparencia e letyout</dd>
+
+                <dt>JavaScript</dt>
+                <dd>linguagem de programação, usada para deixar as paginas interativas</dd>
+                
+            </dl>
+        </section>
+        <hr>
+    </main>
+        <h1>Tabelas</h1>
+    <table style="text-align: center;" border="1" height="200" width="400" cellspacing="10">
+        <caption>Exemplo de Tabela</caption>
+        <thead>
+            <tr>
+                <th colspan="2">Nome e Idade</th>
+               <!--<th>Idade</th>-->
+
+            </tr>
+            <tr valign="bottom">
+                <td rowspan="2">Gustavo</td>
+                <td>17</td>
+          
+            </tr>
+            <tr>
+                <!--<td>Henrique</td>-->
+               <!--<td>16</td>-->
+
+            </tr>
+            <tr>
+                <td>Clara</td>
+                <td>18</td>
+          
+            </tr>
+            <tr>
+                <td colspan="3">Total de Pessoas: 2</td>
+            </tr>
+
+        </thead>
+    </table>
+</body>
+</html>
