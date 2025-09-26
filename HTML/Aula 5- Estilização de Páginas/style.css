@@ -1,0 +1,53 @@
+/* esse é uma classe*/
+.estilizado {
+    color: blue;
+    font-size: 20px;
+    margin-top: 50px;
+    border: solid 2px black;
+    background-color: rgb(255, 205, 242);
+    width: 300px;
+    font-weight: bold;
+}
+/* esse é um id */
+#titulo-principal {
+    color: red;
+    text-align: center;
+    font-family: Arial, sans-serif;
+    text-transform: uppercase;
+}
+/* esse é um seletor */
+p {
+    line-height: 1.5;
+    font-size: 18px;
+}
+/* esse é um seletor universal */
+* {
+    margin: 10px;
+    padding: 10px;
+    box-sizing: border-box;
+}
+/* estilizando todos os titulos */
+h1, h2, h3{
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: darkgreen;
+}
+/* ctrl e ; adiciona comentario */
+h4 {
+    line-height: 1.5; /* espaço entre linhas */
+    letter-spacing: 2px; /* espaçamento entre letras */
+    word-spacing: 5px; /* espaçamento entre palavras */
+}
+img {
+    width: 200px;
+    height: auto;
+    display: block;
+    border-radius: 30px; /* borda arredondada */
+    box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.3);
+    margin: auto; /* sombra */
+}
+ul {
+    list-style-type: square; /* tipo de marcador */
+    padding-left: 20px; /* recuo da lista */
+    background-color: #f0f0f0; /* cor de fundo */
+    
+}

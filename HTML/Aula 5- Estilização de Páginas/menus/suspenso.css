@@ -1,0 +1,90 @@
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+img {
+    width: 50px;
+    border-radius: 50%;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    background: transparent;
+    transition: transform 0.3s ease;
+}
+img:hover {
+    transform: scale(1.05);
+}
+
+
+header {
+    margin-bottom: 8px;
+    border-bottom: 3px solid #444; 
+    background: linear-gradient(90deg, #222, #333); 
+    padding: 10px 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+}
+
+/* Menu principal */
+ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    background-color: transparent; 
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* Itens do menu */
+li {
+    position: relative;
+}
+
+/* Links */
+a {
+    display: block;
+    color: #f0f0f0;
+    font-weight: 500;
+    text-align: center;
+    padding: 12px 18px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border-radius: 6px;
+}
+a:hover {
+    background: #2F81F7; /* azul destaque */
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(47, 129, 247, 0.5);
+}
+
+/* Submenu */
+.sub {
+    display: none;
+    position: absolute;
+    background-color: #222; 
+    border-radius: 6px;
+    overflow: hidden;
+    min-width: 180px;
+    top: 100%; 
+    left: 0;
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.4);
+}
+
+/* Links do submenu */
+.sub a {
+    padding: 12px 16px;
+    color: #ddd;
+    font-size: 14px;
+}
+.sub a:hover {
+    background-color: #2F81F7;
+    color: white;
+}
+
+/* Exibe submenu */
+li:hover .sub {
+    display: block;
+}

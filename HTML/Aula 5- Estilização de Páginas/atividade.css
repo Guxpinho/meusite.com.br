@@ -1,0 +1,82 @@
+header {
+    margin-bottom: 8px;
+    background: linear-gradient(90deg, #222, #333); 
+    padding: 10px 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+h1 {
+    text-align: center;
+}  
+div{
+    margin: auto;
+    text-align: center;
+    padding: auto;
+    
+}
+img {
+    border-radius: 200px;
+    
+    
+}
+p {
+
+    box-sizing: border-box;
+    box-shadow: 5px 5px 10px gray;
+    padding: 5px;
+    margin: 15px;
+}
+
+
+
+ul {
+    background-color: rgb(255, 255, 255);
+    width: 200px;
+    padding: 10px;
+    border-radius: 5px;
+    list-style-type: none;
+}
+
+li {
+    display: inline-block; 
+    margin-right: 15px;    
+    list-style: none;  
+
+
+}
+
+.menu-link {
+    text-decoration: none;
+    color: black;
+    font-weight: bold;
+    font-family: Arial, sans-serif;
+    font-size: 18px;
+    display: inline-block;
+}   
+/* Últimas imagens do rodapé */
+.google,
+.youtube,
+.instagram {
+    width: 30px;          /* tamanho menor */
+    border-radius: 5000px;   /* cantos arredondados */
+    margin-right: 5px;    /* espaço entre a imagem e o texto */
+    vertical-align: middle; /* alinha imagem com o texto */
+    box-shadow: 2px 2px 6px rgba(0,0,0,0.3);
+    display: inline;
+    margin: 5px;
+    
+
+}
+a {
+    width: 300px;
+}
+.class1 {
+    display: inline;
+    width: 100px;
+
+}

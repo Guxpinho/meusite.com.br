@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jogo de Damas</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: #333;
+            color: #f0f0f0;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        .game-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #board {
+            display: grid;
+            grid-template-columns: repeat(8, 60px);
+            grid-template-rows: repeat(8, 60px);
+            border: 5px solid #4a2c11; /* Borda do tabuleiro */
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+            /* Adiciona uma textura de madeira clara para a borda do tabuleiro */
+            background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAcAAAAHCAYAAADLWHf9AAAAW0lEQVQIW2NgYGBgSDFV9e9bXjYQGRY/f/5k//D/Qv7h/5HhgeFpYWFCw4r/uP/8//2FzQ+cDhBgeGhwgQOaBwcGBoaFjQ4qDk4gK/fA0MDQ0NBoNhoEAgAsT2wFw1cTgwAAAABJRU5ErkJggg=='); /* Textura de madeira sutil */
+            background-repeat: repeat;
+        }
+
+        .square {
+            width: 60px;
+            height: 60px;
+            box-sizing: border-box; /* Garante que padding e border sejam incluídos no width/height */
+        }
+
+        .square.dark {
+            background-color: #764b28; /* Cor original do quadrado escuro */
+            /* Textura para os quadrados escuros */
+            background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAcAAAAHCAYAAADLWHf9AAAATklEQVQIW2NgoBCgI3Jt5w9t8bYGAqG/f//G/oP/C/kP/w/27xwWGBgaFBjU9e1b+y8oKPj///93eHiA+C5oGBwYGhqa9W8gKDA0AM+vKwlOa63vAAAAAElFTkSuQmCC');
+            background-repeat: repeat;
+            border: 1px solid rgba(0,0,0,0.1); /* Sutil borda para separar quadrados */
+        }
+
+        .square.light {
+            background-color: #dcb381; /* Cor original do quadrado claro */
+            /* Textura para os quadrados claros */
+            background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAcAAAAHCAYAAADLWHf9AAAAW0lEQVQIW2NgYGBgSDFV9e9bXjYQGRY/f/5k//D/Qv7h/5HhgeFpYWFCw4r/uP/8//2FzQ+cDhBgeGhwgQOaBwcGBoaFjQ4qDk4gK/fA0MDQ0NBoNhoEAgAsT2wFw1cTgwAAAABJRU5ErkJggg==');
+            background-repeat: repeat;
+            border: 1px solid rgba(0,0,0,0.1); /* Sutil borda para separar quadrados */
+        }
+
+        .piece {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin: 5px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: 2px solid transparent; /* Remove a borda padrão para melhor visual */
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.4); /* Sombra para dar profundidade */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .piece.player1 {
+            background: linear-gradient(to bottom, #e0e0e0, #a0a0a0); /* Gradiente para efeito 3D */
+            border: 2px solid #888;
+        }
+
+        .piece.player2 {
+            background: linear-gradient(to bottom, #555, #222); /* Gradiente para efeito 3D */
+            border: 2px solid #000;
+        }
+
+        .king {
+            background: linear-gradient(to bottom, #ffd700, #daa520); /* Gradiente dourado para rei */
+            border: 2px solid #8B4513;
+            box-shadow: 0 0 15px 3px rgba(255, 215, 0, 0.9); /* Sombra mais intensa para rei */
+        }
+
+        .king::after {
+            content: '👑';
+            font-size: 25px;
+            display: block;
+            text-align: center;
+            line-height: 50px;
+            color: #4a2c11; /* Cor para a coroa */
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5); /* Sombra para a coroa */
+        }
+
+        .piece:hover {
+            transform: scale(1.1);
+        }
+
+        .selected {
+            box-shadow: 0 0 10px 5px rgba(0, 255, 0, 0.7);
+        }
+        
+        .must-capture {
+            box-shadow: 0 0 10px 5px rgba(255, 165, 0, 0.9);
+        }
+
+        .info-panel {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        #turn-indicator {
+            font-size: 1.5rem;
+        }
+
+        #message {
+            color: #ff4d4d;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        #reset-button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 1rem;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Jogo de Damas</h1>
+    <div class="game-container">
+        <div id="board"></div>
+        <div class="info-panel">
+            <h2 id="turn-indicator">Vez do Jogador 1</h2>
+            <div id="message"></div>
+            <button id="reset-button">Reiniciar Jogo</button>
+        </div>
+    </div>
+    <script>
+        const board = document.getElementById('board');
+        const turnIndicator = document.getElementById('turn-indicator');
+        const messageElement = document.getElementById('message');
+        const resetButton = document.getElementById('reset-button');
+
+        let activePlayer = 1;
+        let selectedPiece = null;
+        let boardState = [];
+        let mandatoryCaptures = [];
+        let gameEnded = false;
+
+        function createBoard() {
+            boardState = [];
+            board.innerHTML = ''; // Limpa o tabuleiro existente
+            let isDark = false;
+            for (let i = 0; i < 8; i++) {
+                const row = [];
+                for (let j = 0; j < 8; j++) {
+                    const square = document.createElement('div');
+                    square.classList.add('square', isDark ? 'dark' : 'light');
+                    
+                    let piece = null;
+                    if (isDark) {
+                        if (i < 3) { // As 3 primeiras linhas para o jogador 1
+                            piece = createPiece('player1');
+                        } else if (i > 4) { // As 3 últimas linhas para o jogador 2
+                            piece = createPiece('player2');
+                        }
+                    }
+                    
+                    if (piece) {
+                        square.appendChild(piece);
+                    }
+                    
+                    square.dataset.row = i;
+                    square.dataset.col = j;
+                    board.appendChild(square);
+                    row.push({ element: square, piece: piece ? { player: piece.dataset.player, isKing: false } : null });
+                    isDark = !isDark;
+                }
+                isDark = !isDark; // Alterna a cor inicial da linha
+                boardState.push(row);
+            }
+        }
+
+        function createPiece(player) {
+            const piece = document.createElement('div');
+            piece.classList.add('piece', `player${player}`);
+            piece.dataset.player = player;
+            return piece;
+        }
+
+        function handleBoardClick(event) {
+            if (gameEnded) return;
+
+            const square = event.target.closest('.square');
+            if (!square) return;
+
+            const row = parseInt(square.dataset.row);
+            const col = parseInt(square.dataset.col);
+
+            const clickedPieceData = boardState[row][col].piece;
+            const hasMandatoryCaptures = mandatoryCaptures.length > 0;
+
+            if (selectedPiece) {
+                // Se clicou em outra peça do mesmo jogador, deseleciona a atual e seleciona a nova (se for válida para captura obrigatória)
+                if (clickedPieceData && clickedPieceData.player === selectedPiece.player) {
+                    clearSelection();
+                    // Se houver capturas obrigatórias, só permite selecionar peças que podem capturar
+                    if (!hasMandatoryCaptures || mandatoryCaptures.some(p => p.row === row && p.col === col)) {
+                        selectPiece(square.querySelector('.piece'), row, col);
+                        showMessage("");
+                    } else {
+                        showMessage("Você deve fazer uma captura com uma peça válida!");
+                    }
+                    return;
+                }
+
+                const isValidMove = isMoveValid(selectedPiece, row, col);
+                const isCapture = isCaptureMove(selectedPiece.row, selectedPiece.col, row, col);
+                
+                // Se há captura obrigatória e o movimento não é uma captura, é inválido
+                if (hasMandatoryCaptures && !isCapture) {
+                    showMessage("Você deve fazer uma captura!");
+                    return;
+                }
+
+                // Se o movimento é válido
+                if (isValidMove) {
+                    movePiece(selectedPiece, row, col);
+                    
+                    if (isCapture) {
+                        const capturedRow = (selectedPiece.row + row) / 2;
+                        const capturedCol = (selectedPiece.col + col) / 2;
+                        removePiece(capturedRow, capturedCol);
+                    }
+
+                    checkIfKing(row, col);
+                    checkGameStatus();
+                    
+                    // Só troca o turno se o jogo não tiver acabado
+                    if (!gameEnded) {
+                        switchTurn();
+                    }
+                } else {
+                    showMessage("Movimento inválido. Tente novamente.");
+                }
+                clearSelection(); // Limpa a seleção após o movimento (válido ou inválido)
+            } else {
+                // Tentativa de selecionar uma peça
+                if (clickedPieceData && clickedPieceData.player == activePlayer) {
+                    // Se há captura obrigatória, só permite selecionar peças que podem capturar
+                    if (hasMandatoryCaptures && !mandatoryCaptures.some(p => p.row === row && p.col === col)) {
+                         showMessage("Você deve fazer uma captura!");
+                    } else {
+                        selectPiece(square.querySelector('.piece'), row, col);
+                        showMessage("");
+                    }
+                }
+            }
+        }
+
+        function selectPiece(pieceElement, row, col) {
+            // Remove a seleção de qualquer peça anterior
+            clearSelection();
+            // Adiciona a classe 'selected' à nova peça
+            pieceElement.classList.add('selected');
+            selectedPiece = {
+                element: pieceElement,
+                row: row,
+                col: col,
+                isKing: pieceElement.classList.contains('king'),
+                player: pieceElement.dataset.player
+            };
+        }
+
+        function clearSelection() {
+            if (selectedPiece) {
+                selectedPiece.element.classList.remove('selected');
+                selectedPiece = null;
+            }
+            // Remove o destaque de todas as peças de captura obrigatória também
+            document.querySelectorAll('.piece').forEach(p => p.classList.remove('must-capture'));
+        }
+
+        function isMoveValid(piece, newRow, newCol) {
+            // Verifica limites do tabuleiro
+            if (newRow < 0 || newRow >= 8 || newCol < 0 || newCol >= 8) return false;
+
+            const dRow = newRow - piece.row;
+            const dCol = newCol - piece.col;
+            const absDRow = Math.abs(dRow);
+            const absDCol = Math.abs(dCol);
+
+            // Um movimento deve ser na diagonal
+            if (absDRow !== absDCol) return false;
+            // Não pode se mover para a mesma casa
+            if (absDRow === 0) return false;
+
+            const isBackward = piece.player === 'player1' ? dRow < 0 : dRow > 0;
+            if (!piece.isKing && isBackward) return false; // Peças normais não podem mover para trás
+
+            // Movimento simples (uma casa na diagonal)
+            if (absDRow === 1) {
+                if (mandatoryCaptures.length > 0) return false; // Não pode fazer movimento simples se há captura obrigatória
+                return !boardState[newRow][newCol].piece; // Casa de destino vazia
+            }
+
+            // Movimento de captura (duas casas na diagonal)
+            if (absDRow === 2) {
+                const capturedRow = (piece.row + newRow) / 2;
+                const capturedCol = (piece.col + newCol) / 2;
+                const capturedPiece = boardState[capturedRow][capturedCol].piece;
+                
+                // Deve haver uma peça adversária na casa do meio
+                if (capturedPiece && capturedPiece.player !== piece.player) {
+                    return !boardState[newRow][newCol].piece; // Casa de destino vazia
+                }
+            }
+
+            return false; // Nenhum dos casos acima foi satisfeito
+        }
+        
+        // Verifica se uma peça específica pode realizar uma captura
+        function isCapturePossible(row, col, player) {
+            const piece = boardState[row][col].piece;
+            if (!piece || piece.player !== player) return false;
+
+            // Direções de movimento para frente (para peças normais) ou todas (para reis)
+            const directions = piece.isKing ? [[-1, -1], [-1, 1], [1, -1], [1, 1]] : 
+                             (player === 1 ? [[1, -1], [1, 1]] : [[-1, -1], [-1, 1]]);
+
+            for (const [dRow, dCol] of directions) {
+                const intermediateRow = row + dRow;
+                const intermediateCol = col + dCol;
+                const finalRow = row + dRow * 2;
+                const finalCol = col + dCol * 2;
+
+                // Verifica se o movimento de captura está dentro do tabuleiro
+                if (finalRow >= 0 && finalRow < 8 && finalCol >= 0 && finalCol < 8) {
+                    const intermediatePiece = boardState[intermediateRow][intermediateCol].piece;
+                    const finalSquarePiece = boardState[finalRow][finalCol].piece;
+
+                    // Se há uma peça adversária na casa intermediária e a casa final está vazia
+                    if (intermediatePiece && intermediatePiece.player !== player && !finalSquarePiece) {
+                        return true; // Captura é possível
+                    }
+                }
+            }
+            return false;
+        }
+
+        // Encontra todas as capturas obrigatórias para o jogador atual e as destaca
+        function checkForMandatoryCaptures() {
+            mandatoryCaptures = [];
+            for (let i = 0; i < 8; i++) {
+                for (let j = 0; j < 8; j++) {
+                    const piece = boardState[i][j].piece;
+                    if (piece && piece.player == activePlayer && isCapturePossible(i, j, activePlayer)) {
+                        mandatoryCaptures.push({ row: i, col: j });
+                    }
+                }
+            }
+            
+            // Remove highlighting de todas as peças primeiro
+            document.querySelectorAll('.piece').forEach(p => p.classList.remove('must-capture'));
+
+            // Adiciona highlight às peças que devem capturar
+            mandatoryCaptures.forEach(pos => {
+                const pieceElement = boardState[pos.row][pos.col].element.querySelector('.piece');
+                if (pieceElement) {
+                    pieceElement.classList.add('must-capture');
+                }
+            });
+        }
+
+        function isCaptureMove(oldRow, oldCol, newRow, newCol) {
+            return Math.abs(newRow - oldRow) === 2;
+        }
+
+        function movePiece(piece, newRow, newCol) {
+            const oldRow = piece.row;
+            const oldCol = piece.col;
+
+            const oldSquareElement = boardState[oldRow][oldCol].element;
+            const newSquareElement = boardState[newRow][newCol].element;
+            
+            oldSquareElement.removeChild(piece.element);
+            newSquareElement.appendChild(piece.element);
+
+            // Atualiza o estado do tabuleiro
+            boardState[newRow][newCol].piece = boardState[oldRow][oldCol].piece;
+            boardState[oldRow][oldCol].piece = null;
+
+            // Atualiza as informações da peça selecionada (especialmente importante para múltiplas capturas, embora não implementado aqui)
+            selectedPiece.row = newRow;
+            selectedPiece.col = newCol;
+        }
+
+        function removePiece(row, col) {
+            const square = boardState[row][col].element;
+            const piece = square.querySelector('.piece');
+            if (piece) {
+                square.removeChild(piece);
+                boardState[row][col].piece = null;
+            }
+        }
+
+        function checkIfKing(row, col) {
+            const pieceData = boardState[row][col].piece;
+            if (!pieceData || pieceData.isKing) return; // Se não há peça ou já é rei, sai
+
+            if (pieceData.player === 'player1' && row === 7) { // Jogador 1 chega na última linha do adversário
+                boardState[row][col].element.querySelector('.piece').classList.add('king');
+                boardState[row][col].piece.isKing = true;
+            } else if (pieceData.player === 'player2' && row === 0) { // Jogador 2 chega na última linha do adversário
+                boardState[row][col].element.querySelector('.piece').classList.add('king');
+                boardState[row][col].piece.isKing = true;
+            }
+        }
+
+        function switchTurn() {
+            activePlayer = activePlayer === 1 ? 2 : 1;
+            turnIndicator.textContent = `Vez do Jogador ${activePlayer}`;
+            checkForMandatoryCaptures(); // Verifica capturas para o novo jogador
+        }
+
+        function showMessage(msg) {
+            messageElement.textContent = msg;
+        }
+
+        function checkGameStatus() {
+            let player1Pieces = 0;
+            let player2Pieces = 0;
+            for (let i = 0; i < 8; i++) {
+                for (let j = 0; j < 8; j++) {
+                    const piece = boardState[i][j].piece;
+                    if (piece) {
+                        if (piece.player === 'player1') player1Pieces++;
+                        else player2Pieces++;
+                    }
+                }
+            }
+
+            if (player1Pieces === 0) {
+                endGame("O Jogador 2 venceu!");
+            } else if (player2Pieces === 0) {
+                endGame("O Jogador 1 venceu!");
+            }
+        }
+
+        function endGame(message) {
+            showMessage(message);
+            gameEnded = true;
+            turnIndicator.textContent = "Fim de Jogo";
+            // Poderíamos desabilitar o tabuleiro ou mostrar um botão de novo jogo maior aqui
+        }
+
+        function resetGame() {
+            gameEnded = false;
+            activePlayer = 1;
+            selectedPiece = null;
+            mandatoryCaptures = [];
+            turnIndicator.textContent = "Vez do Jogador 1";
+            messageElement.textContent = "";
+            createBoard();
+            checkForMandatoryCaptures(); // Verifica capturas iniciais
+        }
+
+        board.addEventListener('click', handleBoardClick);
+        resetButton.addEventListener('click', resetGame);
+
+        resetGame(); // Inicia o jogo ao carregar a página
+    </script>
+</body>
+</html>

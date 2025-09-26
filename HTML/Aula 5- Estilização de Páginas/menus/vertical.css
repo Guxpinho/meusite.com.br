@@ -1,0 +1,15 @@
+.menu-vertical {
+    width: 200px; /* largura do menu */
+    background-color: #000000; /* cor de fundo do menu */
+    font-family: 'Courier New', Courier, monospace;
+}
+.menu-vertical a {
+    display: block;
+    padding: 12px 16px;
+    text-decoration: none;
+    color: white;
+}
+.menu-vertical a:hover {
+    background-color: #f10101; /* cor de fundo ao passar o mouse */
+}
+/* Fim do menu vertical */
