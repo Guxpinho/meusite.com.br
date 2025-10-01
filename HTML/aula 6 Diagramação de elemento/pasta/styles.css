@@ -1,0 +1,172 @@
+/* Estilos Gerais */
+body {
+  font-family: Arial, sans-serif;
+  margin: 20px;
+}
+
+section {
+  margin-bottom: 40px;
+}
+
+h2 {
+  margin-top: 40px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  background-color: black;
+  color: white;
+  text-align: center;
+}
+
+.container-flex {
+  display: flex;
+  background-color: blueviolet;
+  color: white;
+  gap: 10px; /* Espaçamento entre os itens */
+}
+
+.item-flex {
+  background-color: darkorange;
+  padding: 20px;
+  text-align: center;
+  
+}
+
+/* flex-direction */
+.direcao-linha {
+  flex-direction: row; /* Padrão, pode ser omitido */
+}
+
+.direcao-coluna {
+  flex-direction: column; /* Itens empilhados verticalmente */
+}
+/* flex-wrap */
+.wrap {
+  flex-wrap: wrap; /* Permite que os itens quebrem para a próxima linha */
+}
+.no-wrap {
+  flex-wrap: nowrap; /* Itens não quebram, permanecem em uma única linha */
+}
+
+/* justify-content */
+.justificar-inicio {
+  justify-content: flex-start; /* Itens alinhados ao início do contêiner */
+}
+.justificar-fim {
+  justify-content: flex-end; /* Itens alinhados ao final do contêiner */
+}
+
+.justificar-centro {
+  justify-content: center; /* Itens centralizados */
+}
+.justificar-space-between {
+  justify-content: space-between; /* Espaço igual entre os itens */
+}
+.justificar-space-around {
+  justify-content: space-around; /* Espaço igual ao redor dos itens */
+}
+.justificar-space-evenly {
+  justify-content: space-evenly; /* Espaço igual entre e ao redor dos itens */
+}
+
+/* align-items */
+.alinhar-items .container-flex {
+  height: 300px; /* Altura do contêiner para visualização do alinhamento */
+}
+.alinhar-stretch {
+  align-items: stretch; /* Itens esticam para preencher a altura do contêiner */
+}
+.alinhar-inicio {
+  align-items: flex-start; /* Itens alinhados ao início do contêiner */
+}
+.alinhar-fim {
+  align-items: flex-end; /* Itens alinhados ao final do contêiner */
+}
+.alinhar-centro {
+  align-items: center; /* Itens centralizados verticalmente */
+}
+.alinhar-baseline {
+  align-items: baseline; /* Itens alinhados pela linha de base do texto */
+}
+
+.alinhar-conteudo {
+  align-content: center;
+  height: 600px;
+}
+.alinhar-conteudo .caixa {
+  flex: 0 0 30%; /* para aumentar e fazer com que surja a quebra de linha */
+}
+
+.caixa {
+  padding: 20px;
+  text-align: center;
+  color: white;
+}
+.ordem1 {
+  order: 1;
+}
+.ordem2 {
+  order: 2;
+}
+.ordem3 {
+  order: 3;
+}
+/* Flex Grow, Shrink, Basis e Flex */
+.exemplo-grow .item-flex {
+  flex-basis:100px;
+}
+.crescer1 {
+  flex-grow: 1; /* Item cresce para preencher o espaço disponível */
+}
+.crescer2 {
+  flex-grow: 2; /* Item cresce duas vezes mais que o item com flex-grow: 1 */
+}
+.alinhar-items-individuais .container-flex{
+  height: 300px;
+  
+}
+.self-inicio {
+  align-self: flex-start; /* Item alinhado ao início do contêiner */
+  
+}
+.self-fim {
+  align-self: flex-end; /* Item alinhado ao final do contêiner */
+}
+
+.self-centro {
+  align-self: center; /* Item centralizado verticalmente */
+}
+.self-baseline {
+  align-self: baseline; /* Item alinhado pela linha de base do texto */
+}
+.self-stretch {
+  align-self: stretch; /* Item esticado para preencher a altura do contêiner */
+}
+.menu-nav{
+  background-color: #333;
+  display: flex;
+  justify-content: center;
+  list-style: none;
+
+  
+}
+a {
+  align-items: center;
+  display: block;
+  color: white;
+  text-align: center;
+  padding: 15px 20px;
+  margin: 0 10px;
+  text-decoration: none;
+  border: 0;
+  transition: background-color 0.3s, color 0.3s;
+  
+  
+  
+}
+a:hover {
+  background-color: rgb(255, 255, 255);
+  color: black;
+  display: flex;
+  
+  
+}
