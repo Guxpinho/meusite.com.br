@@ -1,0 +1,34 @@
+div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    font-family: Arial, sans-serif;
+    color: white;
+    font-size: 1.2em;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+    padding: 10px;
+    margin: 10px;
+    resize: both;
+}
+
+img {
+    width: 100px;    /* Altere para o tamanho desejado */
+    height: 100px;   /* Altere para o tamanho desejado */
+    object-fit: contain; /* Ou 'cover' se quiser preencher */
+    margin: 0 8px;
+}
+
+img:hover {
+    transform: scale(1.05);
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #000000;
+    font-size: 2.5em;
+}
