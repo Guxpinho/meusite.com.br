@@ -1,0 +1,153 @@
+/* Estilos Gerais */
+body {
+  font-family: Arial, sans-serif;
+  margin: 20px;
+}
+
+section {
+  margin-bottom: 40px;
+}
+
+h2 {
+  margin-top: 40px;
+  border-bottom: 2px solid #ccc;
+  padding-bottom: 10px;
+}
+/* Exemplo 1: Grid Básico */
+.grid-container {
+  display: grid;
+  background-color: white;
+    padding: 10px; 
+    gap: 10px; 
+}
+.item-grid {
+  background-color: #285b2b;
+  color: white;
+    padding: 20px;
+    font-size: 1.2em;
+    text-align: center;
+    margin: 5px;
+    padding: 5px;
+    
+}
+.grid-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    
+    
+}
+.basico {
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows:  100px 100px;
+}
+.repeat-minmax {
+    grid-template-columns: repeat(4, minmax(100px, 1fr));
+    grid-template-rows:  100px;
+    grid-gap: 20px;
+}
+/* Exemplo 2: Grid com Áreas Nomeadas */
+.auto-fit {
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    grid-auto-rows:  100px;
+    grid-gap: 10px;
+}
+.sobreposicao {
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows:  100px 100px;
+    grid-gap: 10px;
+}
+.item1 {
+    grid-column: 2 / 4;
+    grid-row: 1 / 2; 
+}
+.item2 {
+    grid-column: 1 / 2;
+    grid-row: 1 / 2; 
+    background-color: #ff5733;
+}
+.item3 {
+    grid-column: 1 / 4;
+}
+.item4 {
+    grid-column: 3/ 4;
+}
+.areas-nomeadas {
+    grid-template-areas: 
+      "cabecalho cabecalho"
+      "menu conteudo"
+      "rodape rodape";
+    grid-template-columns: 1fr 2fr;
+    grid-template-rows: auto;
+    grid-gap: 10px
+}
+.cabecalho {
+    grid-area: cabecalho;
+    background-color: #4CAF50;
+}
+.menu {
+    grid-area: menu;
+    background-color: #2196F3;
+}
+
+.conteudo {
+    grid-area: conteudo;
+    background-color: #f44336;
+}
+
+.rodape {
+    grid-area: rodape;
+    background-color: #555;
+}
+.grid-aninhado {
+    grid-template-columns: repeat(2, 1fr);
+    grid-gap: 10px;
+}
+.subgrid-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-gap: 5px;
+}
+
+.subitem-grid {
+    background-color: #ff0000;
+    color: white;
+    padding: 10px;
+}
+.layout-pagina {
+    grid-template-areas: 
+      "header header header"
+      "nav main aside"
+      "footer footer footer";
+    grid-template-columns: 1fr 2fr 1fr;
+    grid-template-rows: auto 500px auto;
+    grid-gap: 10px;
+
+}
+.header {
+    grid-area: header;
+    background-color: #002fff;
+    color: rgb(255, 255, 255);
+    grid-column:  1 / 4;
+
+}
+.nav {
+
+    grid-area: nav;
+    background-color: #f32121;
+}
+.main {
+    grid-area: main;
+    background-color: #6062f1;
+}
+.aside {
+    grid-area: aside;
+    background-color: #ff6600;
+    
+}
+.footer {
+    grid-area: footer;
+    background-color: #4CAF50;
+    color: rgb(255, 255, 255);
+}
+
