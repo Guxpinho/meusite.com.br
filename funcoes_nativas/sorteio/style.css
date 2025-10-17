@@ -1,0 +1,26 @@
+body{
+    margin: 0;
+    padding: 0;
+}
+header { 
+    border: solid 1px black;
+    text-align: center;
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: rgb(0, 41, 222);
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+    color: white;
+   
+
+}
+.sorteio {
+    width: 80%;
+    margin: auto;
+    text-align: center;
+    font-family: Arial, Helvetica, sans-serif;
+}
+img {
+    width: 300px;
+    height: 1000px;
+}

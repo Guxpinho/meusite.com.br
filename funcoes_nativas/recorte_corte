@@ -1,0 +1,6 @@
+<?php
+$txt = "Gustavo";
+echo "O seu nome é: $txt <br>";
+echo "Seu nome com 3 letras é: ".substr($txt, 0, 3)."<br>";
+echo "Seu nome com 3 letras a partir da 4ª letra é: ".substr($txt, 3, 3)."<br>";
+?>
